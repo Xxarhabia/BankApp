@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: BankApp
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bank_app_db?currentSchema=bank
+    username: postgres
+    password: 12345
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
