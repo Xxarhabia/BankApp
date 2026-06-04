@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Random;
 
@@ -42,7 +43,7 @@ public class AccountServiceImpl implements AccountService {
 
         AccountEntity account = AccountEntity.builder()
                 .accountNumber(generateAccountNumber())
-                .balance(0)
+                .balance(BigDecimal.ZERO)
                 .typeAccount(request.typeAccount().toUpperCase())
                 .description(request.description())
                 .user(user)

@@ -15,6 +15,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
 
     List<AccountEntity> findByUser(UserEntity user);
     boolean existsByAccountNumber(String accountNumber);
+    Optional<AccountEntity> findByAccountNumber(String accountNumber);
     @Query("""
         SELECT COUNT(a)
         FROM AccountEntity a

@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Entity
@@ -29,10 +30,11 @@ public class AccountEntity {
     )
     private Long accountId;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true, nullable = false, name = "account_number", length = 10)
     private String accountNumber;
 
-    private double balance;
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal balance;
 
     @Column(name = "type_account", nullable = false)
     private String typeAccount;
@@ -44,6 +46,6 @@ public class AccountEntity {
     private OffsetDateTime createdAt = OffsetDateTime.now();
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "document")
+    @JoinColumn(name = "user_id", referencedColumnName = "userId")
     private UserEntity user;
 }
