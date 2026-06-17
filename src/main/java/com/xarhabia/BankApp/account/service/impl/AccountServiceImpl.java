@@ -9,6 +9,7 @@ import com.xarhabia.BankApp.exceptions.BusinessException;
 import com.xarhabia.BankApp.user.entity.UserEntity;
 import com.xarhabia.BankApp.user.repository.UserRepository;
 import com.xarhabia.BankApp.utils.dto.response.GeneralResponse;
+import com.xarhabia.BankApp.utils.log.RequestResponseLog;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,8 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public GeneralResponse createAccount(String document, CreateAccountRequest request) {
 
+        StringBuilder sbLog = new StringBuilder();
+        sbLog.append(RequestResponseLog.logRequestTransaction(request));
         UserEntity user;
 
         if(userRepository.findByDocument(document).isEmpty()) {
@@ -49,6 +52,9 @@ public class AccountServiceImpl implements AccountService {
                 .user(user)
                 .build();
         account = accountRepository.save(account);
+        sbLog.append("\nSe ha creado la cuenta: ").append(account.getAccountNumber())
+                .append("\nTipo de cuenta: ").append(account.getTypeAccount())
+                .append("\nPara el usuario con documento: ").append(user.getDocument());
 
         return new GeneralResponse("00", "Cuenta creada correctamente", true, toResponse(account));
     }

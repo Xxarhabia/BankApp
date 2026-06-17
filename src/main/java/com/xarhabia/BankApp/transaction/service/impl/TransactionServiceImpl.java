@@ -5,6 +5,8 @@ import com.xarhabia.BankApp.account.repository.AccountRepository;
 import com.xarhabia.BankApp.exceptions.BusinessException;
 import com.xarhabia.BankApp.transaction.dto.request.RegisterDepositWithdrawalRequest;
 import com.xarhabia.BankApp.transaction.dto.request.RegisterTransferRequest;
+import com.xarhabia.BankApp.transaction.dto.response.DepositWithdrawalResponse;
+import com.xarhabia.BankApp.transaction.dto.response.MovementsResponse;
 import com.xarhabia.BankApp.transaction.dto.response.TransferResponse;
 import com.xarhabia.BankApp.transaction.entity.MovementEntity;
 import com.xarhabia.BankApp.transaction.entity.TransferEntity;
@@ -19,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.xarhabia.BankApp.utils.log.RequestResponseLog.*;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -31,6 +35,9 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public GeneralResponse registerTransfer(RegisterTransferRequest request) {
+        StringBuilder sbLog = new StringBuilder();
+        sbLog.append(logRequestTransaction(request));
+
         AccountEntity source = accountRepository.findByAccountNumber(request.sourceAccountNumber())
                 .orElseThrow(() -> new BusinessException("CUENTA_NO_ENCONTRADA", "La cuenta proporcionada no existe"));
         AccountEntity destination = accountRepository.findByAccountNumber(request.destinationAccountNumber())
@@ -57,6 +64,7 @@ public class TransactionServiceImpl implements TransactionService {
                 .typeMovement(MovementType.TRANSFERIR_DEBITO)
                 .build();
 
+
         MovementEntity creditMovement = MovementEntity.builder()
                 .account(destination)
                 .transfer(transfer)
@@ -65,31 +73,56 @@ public class TransactionServiceImpl implements TransactionService {
                 .build();
 
         movementRepository.save(debitMovement);
+        sbLog.append("\nSe ha realizado el debito en la cuenta: ").append(source.getAccountNumber());
+        sbLog.append("\nDatos del debito: ").append(debitMovement.getMovementId()).append(", ")
+                .append(debitMovement.getTypeMovement()).append(", ")
+                .append(debitMovement.getAmount()).append(", ")
+                .append(source.getAccountNumber()).append(", ")
+                .append(source.getBalance()).append(", ")
+                .append(source.getTypeAccount());
+
         movementRepository.save(creditMovement);
+        sbLog.append("\nSe ha realizado el credito en la cuenta: ").append(destination.getAccountNumber());
+        sbLog.append("\nDatos del credito: ").append(creditMovement.getMovementId()).append(", ")
+                .append(creditMovement.getTypeMovement()).append(", ")
+                .append(creditMovement.getAmount()).append(", ")
+                .append(destination.getAccountNumber()).append(", ")
+                .append(destination.getBalance()).append(", ")
+                .append(destination.getTypeAccount());
 
         accountRepository.save(source);
         accountRepository.save(destination);
+
+        TransferResponse response = new TransferResponse(
+                request.sourceAccountNumber(),
+                request.destinationAccountNumber(),
+                request.amount(),
+                "TRANSFERENCIA"
+        );
+
+        sbLog.append(logResponseTransaction(response));
+
+        writeLog(sbLog.toString());
 
         return new GeneralResponse(
                 "00",
                 "Transferencia realizada exitosamente",
                 true,
-                new TransferResponse(
-                        request.sourceAccountNumber(),
-                        request.destinationAccountNumber(),
-                        request.amount(),
-                        "TRANSFERENCIA"
-                )
+                response
         );
     }
 
     @Override
     public GeneralResponse registerDeposit(String accountNumber, RegisterDepositWithdrawalRequest request) {
+        StringBuilder sbLog = new StringBuilder();
+        sbLog.append(logRequestTransaction(request));
+
         AccountEntity account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new BusinessException("CUENTA_NO_ENCONTRADA", "La cuenta proporcionada no existe"));
 
         account.setBalance(account.getBalance().add(request.amount()));
         accountRepository.save(account);
+        sbLog.append("\nDatos actualizados en la cuenta: ").append(account.getAccountNumber());
 
         MovementEntity depositMovement = MovementEntity.builder()
                 .typeMovement(MovementType.DEPOSITO)
@@ -98,12 +131,26 @@ public class TransactionServiceImpl implements TransactionService {
                 .build();
 
         movementRepository.save(depositMovement);
+        DepositWithdrawalResponse response = new DepositWithdrawalResponse(
+                depositMovement.getTypeMovement().toString(),
+                depositMovement.getAmount().toString(),
+                account.getAccountNumber(),
+                account.getBalance().toString(),
+                account.getTypeAccount()
+        );
 
-        return new GeneralResponse("00", "Deposito realizado exitosamente", true, account);
+        sbLog.append("\nDatos del movimiento actualizados: ").append(response);
+        sbLog.append(logResponseTransaction(response));
+
+        writeLog(sbLog.toString());
+        return new GeneralResponse("00", "Deposito realizado exitosamente", true, response);
     }
 
     @Override
     public GeneralResponse registerWithdrawal(String accountNumber, RegisterDepositWithdrawalRequest request) {
+        StringBuilder sbLog = new StringBuilder();
+        sbLog.append(logRequestTransaction(request));
+
         AccountEntity account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new BusinessException("CUENTA_NO_ENCONTRADA", "La cuenta proporcionada no existe"));
 
@@ -115,6 +162,7 @@ public class TransactionServiceImpl implements TransactionService {
 
         account.setBalance(account.getBalance().subtract(request.amount()));
         accountRepository.save(account);
+        sbLog.append("\nDatos actualizados en la cuenta: ").append(account.getAccountNumber());
 
         MovementEntity withdrawalMovement = MovementEntity.builder()
                 .typeMovement(MovementType.RETIRO)
@@ -123,27 +171,91 @@ public class TransactionServiceImpl implements TransactionService {
                 .build();
 
         movementRepository.save(withdrawalMovement);
+        DepositWithdrawalResponse response = new DepositWithdrawalResponse(
+                withdrawalMovement.getTypeMovement().toString(),
+                withdrawalMovement.getAmount().toString(),
+                account.getAccountNumber(),
+                account.getBalance().toString(),
+                account.getTypeAccount()
+        );
 
-        return new GeneralResponse("00", "Retiro realizado exitosamente", true, account);
+        sbLog.append("\nDatos del movimiento actualizados: ").append(response);
+        sbLog.append(logResponseTransaction(response));
+
+        writeLog(sbLog.toString());
+        return new GeneralResponse("00", "Retiro realizado exitosamente", true, response);
     }
 
     @Override
     public GeneralResponse getAllTransactions() {
+        StringBuilder sbLog = new StringBuilder();
+        sbLog.append(logRequestTransaction("Listado de transacciones"));
+
         List<MovementEntity> movements = movementRepository.findAll();
-        return new GeneralResponse("00", "Listado de transacciones", true, movements);
+        List<MovementsResponse> response = movements.stream()
+                        .map(mov -> new MovementsResponse(
+                                mov.getMovementId().toString(),
+                                mov.getTypeMovement().toString(),
+                                mov.getAmount().toPlainString(),
+                                mov.getAccount().getAccountNumber()
+                        )).toList();
+
+        for (MovementsResponse mov : response) {
+            sbLog.append("\nID:").append(mov.movementId())
+                    .append(", Tipo: ").append(mov.typeMovement())
+                    .append(", Monto: ").append(mov.amount())
+                    .append(", Numero Cuenta: ").append(mov.accountNumber());
+        }
+        sbLog.append(logResponseTransaction("Listado de transacciones"));
+
+        writeLog(sbLog.toString());
+        return new GeneralResponse("00", "Listado de transacciones", true, response);
     }
 
     @Override
     public GeneralResponse getTransactionById(Long id) {
+        StringBuilder sbLog = new StringBuilder();
+        sbLog.append(logRequestTransaction("ID Transaction: " + id));
+
         MovementEntity movement = movementRepository.findById(id).orElseThrow(
                 () -> new BusinessException("TRANSACCION_NO_ENCONTRADA", "La transaccion no existe"));
-        return new GeneralResponse("00", "Transaccion", true, movement);
+        sbLog.append("\nObtenido la transaccion con el id: ").append(id);
+
+        MovementsResponse response = new MovementsResponse(
+                movement.getMovementId().toString(),
+                movement.getTypeMovement().toString(),
+                movement.getAmount().toPlainString(),
+                movement.getAccount().getAccountNumber()
+        );
+
+        sbLog.append(logResponseTransaction(response));
+        writeLog(sbLog.toString());
+        return new GeneralResponse("00", "Transaccion", true, response);
     }
 
     @Override
     public GeneralResponse checkUserTransactionsByAccount(String accountNumber) {
+        StringBuilder sbLog = new StringBuilder();
+        sbLog.append(logRequestTransaction(accountNumber));
+
         List<MovementEntity> movements = movementRepository.findByAccountNumber(accountNumber);
-        return new GeneralResponse("00", "Listado de transacciones de la cuenta", true, movements);
+        List<MovementsResponse> response = movements.stream()
+                .map(mov -> new MovementsResponse(
+                        mov.getMovementId().toString(),
+                        mov.getTypeMovement().toString(),
+                        mov.getAmount().toPlainString(),
+                        mov.getAccount().getAccountNumber()
+                )).toList();
+
+        for (MovementsResponse mov : response) {
+            sbLog.append("\nID:").append(mov.movementId())
+                    .append(", Tipo: ").append(mov.typeMovement())
+                    .append(", Monto: ").append(mov.amount())
+                    .append(", Numero Cuenta: ").append(mov.accountNumber());
+        }
+        sbLog.append(logResponseTransaction("Listado de transacciones de la cuenta: " + accountNumber));
+        writeLog(sbLog.toString());
+        return new GeneralResponse("00", "Listado de transacciones de la cuenta", true, response);
     }
 
 }
