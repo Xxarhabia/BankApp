@@ -1,5 +1,6 @@
 package com.xarhabia.BankApp.user.service.impl;
 
+import com.xarhabia.BankApp.audit.Auditable;
 import com.xarhabia.BankApp.exceptions.BusinessException;
 import com.xarhabia.BankApp.user.dto.request.AuthLoginRequest;
 import com.xarhabia.BankApp.user.dto.request.CreateUserRequest;
@@ -74,6 +75,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 
     @Override
+    @Auditable(action = "CREATE_USER")
     public GeneralResponse createNewUser(CreateUserRequest request) {
 
         if (userRepository.findByDocument(request.document()).isPresent()) {
@@ -100,6 +102,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
+    @Auditable(action = "FIND_ALL_USERS")
     public GeneralResponse getAllUsers() {
         List<UserResponse> users = userRepository.findByIsActiveTrue()
                 .stream().map(this::toResponse).toList();
@@ -108,6 +111,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Override
     @Transactional(readOnly = true)
+    @Auditable(action = "FIND_USER")
     public GeneralResponse getUserById(String document) {
         UserEntity user = userRepository.findByDocument(document)
                 .orElseThrow(() -> new BusinessException("USUARIO_NO_ENCONRTADO", "El usuario no existe"));
@@ -115,6 +119,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
+    @Auditable(action = "UPDATE_PASSWORD")
     public GeneralResponse updateUserPassword(String document, UpdateUserPassword request) {
         UserEntity user = userRepository.findByDocument(document)
                 .orElseThrow(() -> new BusinessException("USUARIO_NO_ENCONRTADO", "El usuario no existe"));
@@ -134,6 +139,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     // =========================================================
     // Auth: validación manual de credenciales
     // =========================================================
+    @Auditable(action = "LOGIN")
     private Authentication authenticate(String document, String password) {
         UserEntity user = userRepository.findByDocument(document)
                 .orElseThrow(() -> new BadCredentialsException("Credenciales inválidas"));

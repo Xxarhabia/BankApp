@@ -5,6 +5,7 @@ import com.xarhabia.BankApp.account.dto.response.AccountResponse;
 import com.xarhabia.BankApp.account.entity.AccountEntity;
 import com.xarhabia.BankApp.account.repository.AccountRepository;
 import com.xarhabia.BankApp.account.service.AccountService;
+import com.xarhabia.BankApp.audit.Auditable;
 import com.xarhabia.BankApp.exceptions.BusinessException;
 import com.xarhabia.BankApp.user.entity.UserEntity;
 import com.xarhabia.BankApp.user.repository.UserRepository;
@@ -27,6 +28,7 @@ public class AccountServiceImpl implements AccountService {
     private final UserRepository userRepository;
 
     @Override
+    @Auditable(action = "CREATE_ACCOUNT")
     public GeneralResponse createAccount(String document, CreateAccountRequest request) {
 
         StringBuilder sbLog = new StringBuilder();
@@ -61,6 +63,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional(readOnly = true)
+    @Auditable(action = "FIND_USER_ACCOUNTS")
     public GeneralResponse getAllAccounts(String document) {
         UserEntity user = userRepository.findByDocument(document)
                 .orElseThrow(() -> new BusinessException("USUARIO_NO_ENCONTRADO",

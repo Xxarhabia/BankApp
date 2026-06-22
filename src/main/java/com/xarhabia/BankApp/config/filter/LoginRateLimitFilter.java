@@ -34,6 +34,7 @@ public class LoginRateLimitFilter extends OncePerRequestFilter {
 
         if (!isLoginRequest(request)) {
             filterChain.doFilter(request, response);
+            return;
         }
 
         String ip = resolveClientIp(request);

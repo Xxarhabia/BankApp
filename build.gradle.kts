@@ -23,6 +23,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")        // FIX: era "webmvc"
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("com.bucket4j:bucket4j_jdk17-core:8.19.0")
+	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
+	implementation("org.springframework.boot:spring-boot-starter-aop")
 	implementation("com.auth0:java-jwt:4.5.2")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")

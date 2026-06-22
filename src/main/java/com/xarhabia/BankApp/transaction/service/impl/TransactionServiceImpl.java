@@ -2,6 +2,7 @@ package com.xarhabia.BankApp.transaction.service.impl;
 
 import com.xarhabia.BankApp.account.entity.AccountEntity;
 import com.xarhabia.BankApp.account.repository.AccountRepository;
+import com.xarhabia.BankApp.audit.Auditable;
 import com.xarhabia.BankApp.exceptions.BusinessException;
 import com.xarhabia.BankApp.transaction.dto.request.RegisterDepositWithdrawalRequest;
 import com.xarhabia.BankApp.transaction.dto.request.RegisterTransferRequest;
@@ -34,6 +35,7 @@ public class TransactionServiceImpl implements TransactionService {
 
 
     @Override
+    @Auditable(action = "TRANSFER")
     public GeneralResponse registerTransfer(RegisterTransferRequest request) {
         StringBuilder sbLog = new StringBuilder();
         sbLog.append(logRequestTransaction(request));
@@ -113,6 +115,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @Auditable(action = "DEPOSIT")
     public GeneralResponse registerDeposit(String accountNumber, RegisterDepositWithdrawalRequest request) {
         StringBuilder sbLog = new StringBuilder();
         sbLog.append(logRequestTransaction(request));
@@ -147,6 +150,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @Auditable(action = "WITHDRAWAL")
     public GeneralResponse registerWithdrawal(String accountNumber, RegisterDepositWithdrawalRequest request) {
         StringBuilder sbLog = new StringBuilder();
         sbLog.append(logRequestTransaction(request));
@@ -187,6 +191,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @Auditable(action = "FIND_ALL_TRANSACTIONS")
     public GeneralResponse getAllTransactions() {
         StringBuilder sbLog = new StringBuilder();
         sbLog.append(logRequestTransaction("Listado de transacciones"));
@@ -213,6 +218,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @Auditable(action = "FIND_TRANSACTION")
     public GeneralResponse getTransactionById(Long id) {
         StringBuilder sbLog = new StringBuilder();
         sbLog.append(logRequestTransaction("ID Transaction: " + id));
@@ -234,6 +240,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
+    @Auditable(action = "FIND_USER_TRANSACTIONS")
     public GeneralResponse checkUserTransactionsByAccount(String accountNumber) {
         StringBuilder sbLog = new StringBuilder();
         sbLog.append(logRequestTransaction(accountNumber));

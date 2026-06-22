@@ -1,5 +1,6 @@
 package com.xarhabia.BankApp.config;
 
+import com.xarhabia.BankApp.config.filter.AuditLoggingFilter;
 import com.xarhabia.BankApp.config.filter.JwtTokenValidator;
 import com.xarhabia.BankApp.config.filter.LoginRateLimitFilter;
 import com.xarhabia.BankApp.exceptions.CustomAccessDeniedHandler;
@@ -60,6 +61,8 @@ public class SecurityConfig {
                                 .policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
                 )
                 .authorizeHttpRequests(http -> {
+                    http.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
+                    http.requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll();
                     http.requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll();
                     http.requestMatchers(HttpMethod.PATCH, "/api/v1/users/**").authenticated();
                     http.requestMatchers("/api/v1/transactions/**").authenticated();
@@ -75,14 +78,15 @@ public class SecurityConfig {
                 )
                 .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)
                 .addFilterBefore(new LoginRateLimitFilter(), JwtTokenValidator.class)
+                .addFilterAfter(new AuditLoggingFilter(), JwtTokenValidator.class)
                 .build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PATCH", "DELETE"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);

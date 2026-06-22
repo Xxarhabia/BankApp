@@ -1,0 +1,12 @@
+2026-06-22 17:06:05.171 [5055c6d4-0a09-4b75-bca4-5649c946e044] method=GET uri=/swagger-ui/index.html status=200 user=ANONYMOUS ip=0:0:0:0:0:0:0:1 duration=27
+2026-06-22 17:06:05.191 [0b3cb70b-f7c3-49a0-b44e-e3f5359b4724] method=GET uri=/swagger-ui/index.css status=200 user=ANONYMOUS ip=0:0:0:0:0:0:0:1 duration=2
+2026-06-22 17:06:05.192 [0139b698-7c61-4b1e-ac50-258d00358209] method=GET uri=/swagger-ui/swagger-ui.css status=200 user=ANONYMOUS ip=0:0:0:0:0:0:0:1 duration=4
+2026-06-22 17:06:05.193 [2b325854-2c91-44b2-a8d5-809a378e40d9] method=GET uri=/swagger-ui/swagger-ui-standalone-preset.js status=200 user=ANONYMOUS ip=0:0:0:0:0:0:0:1 duration=4
+2026-06-22 17:06:05.200 [2630e4e0-dd00-4bda-a34e-800f1201d11c] method=GET uri=/swagger-ui/swagger-ui-bundle.js status=200 user=ANONYMOUS ip=0:0:0:0:0:0:0:1 duration=11
+2026-06-22 17:06:05.212 [62f15a28-c58a-41da-9cb8-2071865f0004] method=GET uri=/swagger-ui/swagger-initializer.js status=200 user=ANONYMOUS ip=0:0:0:0:0:0:0:1 duration=23
+2026-06-22 17:06:05.307 [3a7b92b0-fb1b-48f7-a47f-b65f043b68ed] method=GET uri=/swagger-ui/favicon-32x32.png status=200 user=ANONYMOUS ip=0:0:0:0:0:0:0:1 duration=3
+2026-06-22 17:06:05.340 [4b2e9d59-1ef6-46b7-a6e5-e26da11aecd2] method=GET uri=/v3/api-docs/swagger-config status=200 user=ANONYMOUS ip=0:0:0:0:0:0:0:1 duration=35
+2026-06-22 17:06:05.625 [71274102-4933-42b8-b923-3b40f553ff63] method=GET uri=/v3/api-docs status=200 user=ANONYMOUS ip=0:0:0:0:0:0:0:1 duration=265
+2026-06-22 17:06:27.986 [be9d4975-114b-440e-b2d4-7bdb1bc14150] method=POST uri=/api/v1/auth/login status=200 user=1004945471 ip=0:0:0:0:0:0:0:1 duration=187
+2026-06-22 17:07:51.345 [608c6fba-77a1-4f64-bf0a-9b1b82afb2ea] action=WITHDRAWAL user=1004945471 result=SUCCESS
+2026-06-22 17:07:51.353 [608c6fba-77a1-4f64-bf0a-9b1b82afb2ea] method=PATCH uri=/api/v1/transactions/7908434615/withdrawal status=201 user=1004945471 ip=0:0:0:0:0:0:0:1 duration=52
