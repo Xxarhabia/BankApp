@@ -14,3 +14,12 @@ spring:
 logging:
   file:
     name: logs/bankapp.log
+security:
+  jwt:
+    key:
+      private: 98ba36905941c30d4fe13c7a84c2d91f1c02384f003e188ee601d4da76f22058
+    user:
+      generator: AUTH0JWT-BACKEND
+#app:
+#  cors:
+#    allowed-origins: *

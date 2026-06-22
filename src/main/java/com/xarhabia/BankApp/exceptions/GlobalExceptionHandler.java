@@ -1,6 +1,5 @@
 package com.xarhabia.BankApp.exceptions;
 
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -52,7 +51,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleGeneral(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of(
                 "code", "INTERNAL_ERROR",
-                "message", "Error interno del servidor" + ex.getMessage(),
+                "message", "Error interno del servidor " + ex.getMessage(),
                 "success", false
         ));
     }

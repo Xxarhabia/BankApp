@@ -17,12 +17,6 @@ public class UserController {
 
     private final UserService userService;
 
-    // POST /api/v1/users
-    @PostMapping
-    public ResponseEntity<GeneralResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createNewUser(request));
-    }
-
     // GET /api/v1/users
     @GetMapping
     public ResponseEntity<GeneralResponse> getAllUsers() {

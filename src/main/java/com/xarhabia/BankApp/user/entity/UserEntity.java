@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.OffsetDateTime;
 
@@ -44,4 +45,12 @@ public class UserEntity {
     @Column(name = "create_at", nullable = false)
     @Builder.Default
     private OffsetDateTime createdAt = OffsetDateTime.now();
+
+    @Column(name = "failed_attemps", nullable = false)
+    @ColumnDefault("0")
+    @Builder.Default
+    private Integer failedAttempts = 0;
+
+    @Column(name = "locket_until")
+    private OffsetDateTime lockedUntil;
 }
